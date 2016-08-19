@@ -5,7 +5,26 @@ services:
     image: thegene/gallery-manifests
     volumes:
       - config:/config
-  wedding:
+  harrison-build:
+    image: thegene/gallery
+    environment:
+      - GALLERY_ENV=production
+      - GALLERY=harrison_newborn
+    depends_on:
+      - config
+    volumes_from:
+      - config
+    volumes:
+      - harrison-build:/build
+  harrison:
+    image: thegene/gallery-server
+    depends_on:
+      - harrison-build
+    volumes_from:
+      - harrison-build
+    ports:
+      - "80"
+  wedding-build:
     image: thegene/gallery
     environment:
       - GALLERY_ENV=production
@@ -16,15 +35,16 @@ services:
       - config
     volumes:
       - wedding:/build
-  wedding-server:
+  wedding:
     image: thegene/gallery-server
     depends_on:
-      - wedding
+      - wedding-build
     volumes_from:
-      - wedding
+      - wedding-build
     ports:
-      - "3000:80"
+      - "80"
 
 volumes:
   wedding:
+  harrison-build:
   config:
