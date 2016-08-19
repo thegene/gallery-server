@@ -1,0 +1,30 @@
+version: "2"
+
+services:
+  config:
+    image: thegene/gallery-manifests
+    volumes:
+      - config:/config
+  wedding:
+    image: thegene/gallery
+    environment:
+      - GALLERY_ENV=production
+      - GALLERY=wedding
+    depends_on:
+      - config
+    volumes_from:
+      - config
+    volumes:
+      - wedding:/build
+  wedding-server:
+    image: thegene/gallery-server
+    depends_on:
+      - wedding
+    volumes_from:
+      - wedding
+    ports:
+      - "3000:80"
+
+volumes:
+  wedding:
+  config:
